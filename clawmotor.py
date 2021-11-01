@@ -40,23 +40,43 @@ while(1):
             
             button_state = GPIO.input(5)
             if button_state == False and motor_state == False:
-                x = "r"
-                #time.sleep(0.5)
+                motor_state = True
+                GPIO.output(23,GPIO.HIGH)
+                GPIO.output(24,GPIO.LOW)
+                print("nyoom")
+                time.sleep(1.5)
+                GPIO.output(23,GPIO.LOW)
+                GPIO.output(24,GPIO.LOW)
+                print("x")
+                time.sleep(1)
+                GPIO.output(23,GPIO.LOW)
+                GPIO.output(24,GPIO.HIGH)
+                print("mooyn")
+                time.sleep(1.5)
+                GPIO.output(23,GPIO.LOW)
+                GPIO.output(24,GPIO.LOW)
+                print("x")
+                motor_state = False
             elif button_state == False and motor_state == True:
-                x = "s"
+                x = ""
                 #time.sleep(0.5)
             
             if x=='r':
                 #print("run")
                 if(temp1==1):
-                    p.ChangeDutyCycle(25)
                     GPIO.output(23,GPIO.HIGH)
                     GPIO.output(24,GPIO.LOW)
                     print("forward")
-                    temp1 = 1
-                    x='z'
-                    motor_state = True
-                    time.sleep(0.5)
+                    time.sleep(2)
+                    GPIO.output(23,GPIO.LOW)
+                    GPIO.output(24,GPIO.LOW)
+                    print("stop")
+                    time.sleep(1)
+                    GPIO.output(23,GPIO.LOW)
+                    GPIO.output(24,GPIO.HIGH)
+                    print("backwards")
+                    time.sleep(2)
+                    
                 #else:
                  #GPIO.output(in1,GPIO.LOW)
                  #GPIO.output(in2,GPIO.HIGH)
