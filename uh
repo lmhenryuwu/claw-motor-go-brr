@@ -1,0 +1,124 @@
+import RPi.GPIO as GPIO          
+import time
+
+in1C = 24
+in2C = 23
+enC = 25
+in1X = 17
+in2X = 27
+enX = 22
+in1Y = 4
+in2Y = 3
+enY = 2
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(in1C,GPIO.OUT)
+GPIO.setup(in2C,GPIO.OUT)
+GPIO.setup(enC,GPIO.OUT)
+GPIO.output(in1C,GPIO.LOW)
+GPIO.output(in2C,GPIO.LOW)
+GPIO.setup(in1X,GPIO.OUT)
+GPIO.setup(in2X,GPIO.OUT)
+GPIO.setup(enX,GPIO.OUT)
+GPIO.output(in1X,GPIO.LOW)
+GPIO.output(in2X,GPIO.LOW)
+GPIO.setup(in1Y,GPIO.OUT)
+GPIO.setup(in2Y,GPIO.OUT)
+GPIO.setup(enY,GPIO.OUT)
+GPIO.output(in1Y,GPIO.LOW)
+GPIO.output(in2Y,GPIO.LOW)
+GPIO.setup(26, GPIO.IN)
+GPIO.setup(16, GPIO.IN)
+GPIO.setup(14, GPIO.IN)
+GPIO.setup(21, GPIO.IN)
+GPIO.setup(5, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+pC=GPIO.PWM(enC,1000)
+pC.start(25)
+pX=GPIO.PWM(enX,1000)
+pX.start(25)
+pY=GPIO.PWM(enY,1000)
+pY.start(25)
+print("\n\n\n")    
+
+def ClawFunction():
+    GPIO.output(23,GPIO.HIGH)
+    GPIO.output(24,GPIO.LOW)
+    print("forward")
+    time.sleep(1.5)
+    GPIO.output(23,GPIO.LOW)
+    GPIO.output(24,GPIO.LOW)
+    print("x")
+    time.sleep(1)
+    GPIO.output(23,GPIO.LOW)
+    GPIO.output(24,GPIO.HIGH)
+    print("backwards")
+    time.sleep(1.5)
+    GPIO.output(23,GPIO.LOW)
+    GPIO.output(24,GPIO.LOW)
+    print("x")
+
+claw_state = False
+motor_stateX = False
+motor_stateY = False
+
+while(1):
+    
+    #################    
+    # CLAW FUNCTION #    
+    #################    
+        
+    button_state = GPIO.input(5)
+    if button_state == False and claw_state == False:
+        claw_state = True
+        ClawFunction()
+        claw_state = False
+    elif button_state == False and claw_state == True:
+        GPIO.output(23,GPIO.LOW)
+        GPIO.output(24,GPIO.LOW)
+    
+    ###################### 
+    # MOTOR FUNCTION (X) #    
+    ###################### 
+    
+    stick_stateX1 = GPIO.input(26)
+    stick_stateX2 = GPIO.input(16)
+    if ((stick_stateX1 == False) and (motor_stateX == False)):
+        motor_stateX = True
+        pX.ChangeDutyCycle(50)
+        GPIO.output(27,GPIO.HIGH)
+        GPIO.output(17,GPIO.LOW)
+    elif ((stick_stateX2 == False) and (motor_stateX == False)):
+        motor_stateX = True
+        pX.ChangeDutyCycle(50)
+        GPIO.output(27,GPIO.LOW)
+        GPIO.output(17,GPIO.HIGH)
+    elif (((stick_stateX1 == True) or (stick_stateX2 == True)) and (motor_stateX == True)):
+        motor_stateX = False
+        GPIO.output(27,GPIO.LOW)
+        GPIO.output(17,GPIO.LOW)
+        
+    ###################### 
+    # MOTOR FUNCTION (Y) #    
+    ###################### 
+    
+    stick_stateY1 = GPIO.input(14)
+    stick_stateY2 = GPIO.input(21)
+    if ((stick_stateY1 == False) and (motor_stateY == False)):
+        motor_stateY = True
+        pY.ChangeDutyCycle(50)
+        GPIO.output(3,GPIO.HIGH)
+        GPIO.output(4,GPIO.LOW)
+    elif ((stick_stateY2 == False) and (motor_stateY == False)):
+        motor_stateY = True
+        pY.ChangeDutyCycle(75)
+        GPIO.output(3,GPIO.LOW)
+        GPIO.output(4,GPIO.HIGH)
+    elif (((stick_stateY1 == True)or (stick_stateY2 == True)) and (motor_stateY == True)):
+        motor_stateY = False
+        GPIO.output(3,GPIO.LOW)
+        GPIO.output(4,GPIO.LOW)
+
+    
+        
+
